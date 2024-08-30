@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <style>
+        /* Importando a fonte do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffe0b2; /* Laranja bebê */
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        #formTarefa {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        #formTarefa h2 {
+            margin: 0 0 15px;
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 500;
+        }
+        #formTarefa input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        #formTarefa button {
+            background-color: #ff7043; /* Laranja escuro */
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        #formTarefa button:hover {
+            background-color: #e64a19; /* Laranja mais escuro */
+            transform: scale(1.05);
+        }
+        #containerTarefas {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        #containerTarefas h2 {
+            margin: 0 0 15px;
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 500;
+        }
+        .tarefa {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        .tarefa:hover {
+            background-color: #fff3e0; /* Cor de fundo ao passar o mouse */
+        }
+        .tarefa:last-child {
+            border-bottom: none;
+        }
+        .descricao-tarefa {
+            flex: 1;
+            font-size: 1.2em;
+            font-weight: 400;
+        }
+        .acoes-tarefa button {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .acoes-tarefa button:hover {
+            transform: scale(1.05);
+        }
+        .botao-editar {
+            background-color: #ffab40; /* Laranja claro */
+            color: #ffffff;
+        }
+        .botao-editar:hover {
+            background-color: #ff9100; /* Laranja mais escuro */
+        }
+        .botao-excluir {
+            background-color: #ff6f61; /* Rosa claro */
+            color: #ffffff;
+        }
+        .botao-excluir:hover {
+            background-color: #e55b50; /* Rosa escuro */
+        }
+    </style>
+</head>
+<body>
+    <form id="formTarefa">
+        <h2>Adicionar Tarefa</h2>
+        <input type="text" id="inputTarefa" placeholder="Digite uma tarefa" required>
+        <button type="submit">Adicionar</button>
+    </form>
+
+    <div id="tarefas">
+        <h2>Tarefas</h2>
+        <div id="containerTarefas">
+            <!-- Tarefas serão exibidas aqui -->
+        </div>
+    </div>
+
+    <script>
+        const tarefas = [
+            { id: 1, descricao: 'Comprar leite' },
+            { id: 2, descricao: 'Estudar JavaScript' },
+            { id: 3, descricao: 'Fazer exercícios físicos' }
+        ];
+
+        function carregarTarefas() {
+            const containerTarefas = document.getElementById('containerTarefas');
+            containerTarefas.innerHTML = ''; 
+
+            tarefas.forEach(tarefa => {
+                const elementoTarefa = document.createElement('div');
+                elementoTarefa.className = 'tarefa';
+                elementoTarefa.innerHTML = `
+                    <div class="descricao-tarefa">
+                        ${tarefa.descricao}
+                    </div>
+                    <div class="acoes-tarefa">
+                        <button class="botao-editar" data-id="${tarefa.id}">Editar</button>
+                        <button class="botao-excluir" data-id="${tarefa.id}">Excluir</button>
+                    </div>
+                `;
+                containerTarefas.appendChild(elementoTarefa);
+            });
+
+            document.querySelectorAll('.botao-excluir').forEach(botao => {
+                botao.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const index = tarefas.findIndex(t => t.id === id);
+                    if (index > -1) {
+                        tarefas.splice(index, 1); 
+                        carregarTarefas(); 
+                    }
+                });
+            });
+
+            document.querySelectorAll('.botao-editar').forEach(botao => {
+                botao.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const tarefa = tarefas.find(t => t.id === id);
+                    const novaDescricao = prompt('Editar tarefa:', tarefa.descricao);
+                    if (novaDescricao && novaDescricao.trim() !== '') {
+                        tarefa.descricao = novaDescricao.trim(); 
+                        carregarTarefas(); 
+                    }
+                });
+            });
+        }
+
+        window.onload = function() {
+            carregarTarefas();
+        };
+
+        document.getElementById('formTarefa').addEventListener('submit', function(evento) {
+            evento.preventDefault();
+            const descricao = document.getElementById('inputTarefa').value.trim();
+            if (descricao) {
+                const novaTarefa = {
+                    id: tarefas.length ? tarefas[tarefas.length - 1].id + 1 : 1,
+                    descricao: descricao
+                };
+                tarefas.push(novaTarefa); 
+                carregarTarefas(); 
+                this.reset(); 
+            }
+        });
+    </script>
+</body>
+</html>
